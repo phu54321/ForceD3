@@ -7,14 +7,11 @@
 
 #include <IOKit/IOService.h>
 
-/* Define the driver's superclass */
-#define super IOService
-
 #ifndef __iokit_makefile__
 #define __IO_CLASS__        com_example_driver_ioexample
 #endif
 
-class __IO_CLASS__ : public super {
+class __IO_CLASS__ : public IOService {
     OSDeclareDefaultStructors(__IO_CLASS__)
 
 public:
