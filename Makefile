@@ -84,7 +84,7 @@ CFLAGS+=	-mmacosx-version-min=10.4
 endif
 CFLAGS+=	$(SDKFLAGS) \
 		$(ARCHFLAGS) \
-		-x c \
+		-x c++ \
 		-std=c99 \
 		-nostdinc \
 		-fno-builtin \
@@ -116,14 +116,14 @@ LIBS+=		-lcc_kext
 KLFLAGS+=	-xml -c -unsupported -undef-symbols
 
 # source, header, object and make files
-SRCS:=		$(wildcard src/*.c)
-OBJS:=		$(SRCS:.c=.o)
+SRCS:=		$(wildcard src/*.cpp)
+OBJS:=		$(SRCS:.cpp=.o)
 
 # targets
 
 all: debug
 
-%.o: %.c $(HDRS)
+%.o: %.cpp $(HDRS)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 $(KEXTMACHO): $(OBJS)
