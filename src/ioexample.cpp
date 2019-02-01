@@ -9,7 +9,7 @@
  * This required macro defines the class's constructors, destructors
  *  and several other methods I/O Kit requires.
  */
-OSDefineMetaClassAndStructors(__IO_CLASS__, IOService)
+OSDefineMetaClassAndStructors(__IO_CLASS__, super)
 
 bool __IO_CLASS__::init(OSDictionary *dict)
 {
