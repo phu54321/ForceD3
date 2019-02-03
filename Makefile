@@ -128,7 +128,7 @@ OBJS:=		$(SRCS:.cpp=.o)
 
 all: debug
 
-%.o: %.cpp $(HDRS)
+%.o: %.cpp
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 $(KEXTMACHO): $(OBJS)
