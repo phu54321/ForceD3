@@ -74,7 +74,8 @@ CPPFLAGS+=	-DKEXTNAME_S=\"$(KEXTNAME)\"		\
 		-DKEXTVERSION_S=\"$(KEXTVERSION)\"	\
 		-DKEXTBUILD_S=\"$(KEXTBUILD)\"		\
 		-DBUNDLEID_S=\"$(BUNDLEID)\"		\
-		-DBUNDLEID=$(BUNDLEID)
+		-DBUNDLEID=$(BUNDLEID)			\
+		-D__IO_CLASS__=$(IO_CLASS)
 
 TIME_STAMP:=	$(shell date +'%Y/%m/%d\ %H:%M:%S%z')
 CPPFLAGS+=	-D__TS__=\"$(TIME_STAMP)\"
