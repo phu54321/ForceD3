@@ -89,8 +89,6 @@ CFLAGS+=	-mmacosx-version-min=10.4
 endif
 CFLAGS+=	$(SDKFLAGS) \
 		$(ARCHFLAGS) \
-		-x c++ \
-		-std=c++98 \
 		-nostdinc \
 		-fno-builtin \
 		-fno-common \
@@ -113,7 +111,7 @@ LDFLAGS+=	$(SDKFLAGS) \
 		-Xlinker -export_dynamic
 
 # libraries
-#LIBS+=		-lkmod
+LIBS+=		-lkmod
 LIBS+=		-lkmodc++
 LIBS+=		-lcc_kext
 
@@ -122,14 +120,19 @@ KLFLAGS+=	-xml -c -unsupported -undef-symbols
 
 # source, object files
 SRCS:=		$(wildcard src/*.cpp)
+SRCS+=		$(wildcard src/*.c)
 OBJS:=		$(SRCS:.cpp=.o)
+OBJS:=		$(OBJS:.c=.o)
 
 # targets
 
 all: debug
 
+%.o: %.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -x c -std=c99 -c -o $@ $<
+
 %.o: %.cpp
-	$(CXX) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CFLAGS) -x c++ -std=c++98 -c -o $@ $<
 
 $(KEXTMACHO): $(OBJS)
 	$(CXX) $(LDFLAGS) $(LIBS) -o $@ $^
