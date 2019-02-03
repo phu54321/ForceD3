@@ -47,7 +47,7 @@ PREFIX?=	/Library/Extensions
 SDKROOT?=	$(shell xcrun --sdk macosx --show-sdk-path)
 
 SDKFLAGS=	-isysroot $(SDKROOT)
-#CC=		$(shell xcrun -find -sdk $(SDKROOT) cc)
+CC=		$(shell xcrun -find -sdk $(SDKROOT) cc)
 CXX=		$(shell xcrun -find -sdk $(SDKROOT) c++)
 CODESIGN=	$(shell xcrun -find -sdk $(SDKROOT) codesign)
 
@@ -120,7 +120,7 @@ LIBS+=		-lcc_kext
 # kextlibs flags
 KLFLAGS+=	-xml -c -unsupported -undef-symbols
 
-# source, header, object and make files
+# source, object files
 SRCS:=		$(wildcard src/*.cpp)
 OBJS:=		$(SRCS:.cpp=.o)
 
@@ -129,10 +129,10 @@ OBJS:=		$(SRCS:.cpp=.o)
 all: debug
 
 %.o: %.cpp
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 $(KEXTMACHO): $(OBJS)
-	$(CC) $(LDFLAGS) $(LIBS) -o $@ $^
+	$(CXX) $(LDFLAGS) $(LIBS) -o $@ $^
 	otool -h $@
 	otool -l $@ | grep uuid
 
@@ -144,7 +144,7 @@ Info.plist~: Info.plist.in
 		-e 's/__KEXTBUILD__/$(KEXTBUILD)/g' \
 		-e 's/__BUNDLEID__/$(BUNDLEID)/g' \
 		-e 's/__OSBUILD__/$(shell /usr/bin/sw_vers -buildVersion)/g' \
-		-e 's/__CLANGVER__/$(shell $(CC) -v 2>&1 | grep version)/g' \
+		-e 's/__CLANGVER__/$(shell $(CXX) -v 2>&1 | grep version)/g' \
 		-e 's/__IO_CLASS__/$(IO_CLASS)/g' \
 		-e 's/__IOKIT_DEBUG__/$(IOKIT_DEBUG)/g' \
 		-e 's/__IO_PROVIDER_CLASS__/$(IO_PROVIDER_CLASS)/g' \
