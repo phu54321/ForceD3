@@ -26,16 +26,19 @@
 	</array>
 	<key>IOKitPersonalities</key>
 	<dict>
-		<key>CFBundleIdentifier</key>
-		<string>__BUNDLEID__</string>
-		<key>IOClass</key>
-		<string>__IO_CLASS__</string>
-		<key>IOKitDebug</key>
-		<integer>__IOKIT_DEBUG__</integer>
-		<key>IOMatchCathegory</key>
-		<string>__IO_CLASS__</string>
-		<key>IOProviderClass</key>
-		<string>__IO_PROVIDER_CLASS__</string>
+		<key>__KEXTNAME__</key>
+		<dict>
+			<key>CFBundleIdentifier</key>
+			<string>__BUNDLEID__</string>
+			<key>IOClass</key>
+			<string>__IO_CLASS__</string>
+			<key>IOKitDebug</key>
+			<integer>__IOKIT_DEBUG__</integer>
+			<key>IOMatchCathegory</key>
+			<string>__IO_CLASS__</string>
+			<key>IOProviderClass</key>
+			<string>__IO_PROVIDER_CLASS__</string>
+		</dict>
 	</dict>
 __KEXTLIBS__
 </dict>
