@@ -15,11 +15,11 @@ class __IO_CLASS__ : public IOService {
     OSDeclareDefaultStructors(__IO_CLASS__)
 
 public:
-    bool init(OSDictionary *dictionary = NULL) override;
-    void free(void) override;
-    IOService *probe(IOService *provider, SInt32 *score) override;
-    bool start(IOService *provider) override;
-    void stop(IOService *provider) override;
+    bool init(OSDictionary *dictionary = NULL);
+    void free(void);
+    IOService *probe(IOService *provider, SInt32 *score);
+    bool start(IOService *provider);
+    void stop(IOService *provider);
 };
 
 #endif      /* __IOEXAMPLE_H__ */

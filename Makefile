@@ -90,7 +90,7 @@ endif
 CFLAGS+=	$(SDKFLAGS) \
 		$(ARCHFLAGS) \
 		-x c++ \
-		-std=c++11 \
+		-std=c++98 \
 		-nostdinc \
 		-fno-builtin \
 		-fno-common \
