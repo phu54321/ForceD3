@@ -24,9 +24,14 @@ ifndef BUNDLEDOMAIN
 $(error BUNDLEDOMAIN not defined)
 endif
 
+ifndef IO_PROVIDER_CLASS
+$(error IO_PROVIDER_CLASS not defined)
+endif
+
 
 # defaults
-BUNDLEID?=	$(BUNDLEDOMAIN).kext.$(KEXTNAME)
+BUNDLEID?=	$(BUNDLEDOMAIN).driver.$(KEXTNAME)
+IO_CLASS?=	$(shell sed 's/\./_/g' <<< $(BUNDLEID))
 KEXTBUNDLE?=	$(KEXTNAME).kext
 KEXTMACHO?=	$(KEXTNAME).out
 ARCHFLAGS?=	-arch x86_64
@@ -140,6 +145,9 @@ Info.plist~: Info.plist.in
 		-e 's/__BUNDLEID__/$(BUNDLEID)/g' \
 		-e 's/__OSBUILD__/$(shell /usr/bin/sw_vers -buildVersion)/g' \
 		-e 's/__CLANGVER__/$(shell $(CC) -v 2>&1 | grep version)/g' \
+		-e 's/__IO_CLASS__/$(IO_CLASS)/g' \
+		-e 's/__IOKIT_DEBUG__/$(IOKIT_DEBUG)/g' \
+		-e 's/__IO_PROVIDER_CLASS__/$(IO_PROVIDER_CLASS)/g' \
 	$^ > $@
 
 $(KEXTBUNDLE): $(KEXTMACHO) Info.plist~
@@ -176,10 +184,12 @@ endif
 # Those two flags must present at the same time  o.w. debug symbol cannot be generated
 debug: CPPFLAGS += -g -DDEBUG
 debug: CFLAGS += -O0
+debug: IOKIT_DEBUG ?= 65535
 debug: $(KEXTBUNDLE)
 
 # see: https://stackoverflow.com/questions/15548023/clang-optimization-levels
 release: CFLAGS += -O2
+release: IOKIT_DEBUG ?= 0
 release: $(KEXTBUNDLE)
 
 load: $(KEXTBUNDLE)

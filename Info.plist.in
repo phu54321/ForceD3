@@ -31,7 +31,7 @@
 		<key>IOClass</key>
 		<string>__IO_CLASS__</string>
 		<key>IOKitDebug</key>
-		<integer>65536</integer>
+		<integer>__IOKIT_DEBUG__</integer>
 		<key>IOMatchCathegory</key>
 		<string>__IO_CLASS__</string>
 		<key>IOProviderClass</key>
