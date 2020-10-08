@@ -35,7 +35,6 @@ IO_CLASS?=	$(shell sed 's/\./_/g' <<< $(BUNDLEID))
 KEXTBUNDLE?=	$(KEXTNAME).kext
 KEXTMACHO?=	$(KEXTNAME).out
 ARCHFLAGS?=	-arch x86_64
-#ARCHFLAGS?=	-arch x86_64 -arch i386
 PREFIX?=	/Library/Extensions
 
 #
@@ -86,7 +85,7 @@ CPPFLAGS+=	-D__TS__=\"$(TIME_STAMP)\"
 ifdef MACOSX_VERSION_MIN
 CFLAGS+=	-mmacosx-version-min=$(MACOSX_VERSION_MIN)
 else
-CFLAGS+=	-mmacosx-version-min=10.4
+CFLAGS+=	-mmacosx-version-min=10.11
 endif
 CFLAGS+=	$(SDKFLAGS) \
 		$(ARCHFLAGS) \
@@ -96,7 +95,7 @@ CFLAGS+=	$(SDKFLAGS) \
 		-mkernel
 
 # warnings
-CFLAGS+=	-Wall -Wextra -Werror
+# CFLAGS+=	-Wall -Wextra -Werror
 
 # linker flags
 ifdef MACOSX_VERSION_MIN
@@ -133,7 +132,7 @@ all: debug
 	$(CC) $(CPPFLAGS) $(CFLAGS) -x c -std=c99 -c -o $@ $<
 
 %.o: %.cpp
-	$(CXX) $(CPPFLAGS) $(CFLAGS) -x c++ -std=c++98 -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CFLAGS) -x c++ -std=c++14 -c -o $@ $<
 
 $(KEXTMACHO): $(OBJS)
 	$(CXX) $(LDFLAGS) $(LIBS) -o $@ $^
