@@ -15,11 +15,13 @@ class __IO_CLASS__ : public IOService {
     OSDeclareDefaultStructors(__IO_CLASS__)
 
 public:
-    bool init(OSDictionary *dictionary = NULL) override;
-    void free(void) override;
-    IOService *probe(IOService *provider, SInt32 *score) override;
     bool start(IOService *provider) override;
     void stop(IOService *provider) override;
+
+    virtual IOReturn powerStateDidChangeTo(
+        IOPMPowerFlags capabilities,
+        unsigned long stateNumber,
+        IOService *whatDevice );
 };
 
 #endif      /* __IOEXAMPLE_H__ */

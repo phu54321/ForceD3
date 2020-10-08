@@ -34,8 +34,13 @@
 			<string>__IO_CLASS__</string>
 			<key>IOKitDebug</key>
 			<integer>__IOKIT_DEBUG__</integer>
-			<key>IOMatchCathegory</key>
-			<string>__IO_CLASS__</string>
+			<key>IONameMatch</key>
+			<array>
+				<string>pci8086,2bc</string>
+				<string>pci8086,2b0</string>
+			</array>
+			<key>IOProbeScore</key>
+			<integer>9999</integer>
 			<key>IOProviderClass</key>
 			<string>__IO_PROVIDER_CLASS__</string>
 		</dict>
