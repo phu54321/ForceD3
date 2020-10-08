@@ -139,7 +139,7 @@ $(KEXTMACHO): $(OBJS)
 	otool -h $@
 	otool -l $@ | grep uuid
 
-Info.plist~: Info.plist.in
+.Info.plist: Info.plist.in
 	sed \
 		-e 's/__KEXTNAME__/$(KEXTNAME)/g' \
 		-e 's/__KEXTMACHO__/$(KEXTNAME)/g' \
@@ -153,14 +153,14 @@ Info.plist~: Info.plist.in
 		-e 's/__IO_PROVIDER_CLASS__/$(IO_PROVIDER_CLASS)/g' \
 	$^ > $@
 
-$(KEXTBUNDLE): $(KEXTMACHO) Info.plist~
+$(KEXTBUNDLE): $(KEXTMACHO) .Info.plist
 	mkdir -p $@/Contents/MacOS
 	mv $< $@/Contents/MacOS/$(KEXTNAME)
 
 	# Clear placeholders(o.w. kextlibs cannot parse)
-	sed 's/__KEXTLIBS__//g' Info.plist~ > $@/Contents/Info.plist
-	awk '/__KEXTLIBS__/{system("kextlibs $(KLFLAGS) $@");next};1' Info.plist~ > $@/Contents/Info.plist~
-	mv $@/Contents/Info.plist~ $@/Contents/Info.plist
+	sed 's/__KEXTLIBS__//g' .Info.plist > $@/Contents/Info.plist
+	awk '/__KEXTLIBS__/{system("kextlibs $(KLFLAGS) $@");next};1' .Info.plist > $@/Contents/.Info.plist
+	mv $@/Contents/.Info.plist $@/Contents/Info.plist
 
 ifdef COMPATIBLE_VERSION
 	/usr/libexec/PlistBuddy -c 'Add :OSBundleCompatibleVersion string "$(COMPATIBLE_VERSION)"' $@/Contents/Info.plist
@@ -221,7 +221,7 @@ uninstall:
 	sudo rm -rf "$(PREFIX)/$(KEXTBUNDLE)" || true
 
 clean:
-	rm -rf $(KEXTBUNDLE) $(KEXTBUNDLE).dSYM Info.plist~ $(OBJS) $(KEXTMACHO)
+	rm -rf $(KEXTBUNDLE) $(KEXTBUNDLE).dSYM .Info.plist $(OBJS) $(KEXTMACHO)
 
 .PHONY: all debug release load stat unload intall uninstall clean
 
