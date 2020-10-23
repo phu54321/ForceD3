@@ -35,7 +35,6 @@ IO_CLASS?=	$(shell sed 's/\./_/g' <<< $(BUNDLEID))
 KEXTBUNDLE?=	$(KEXTNAME).kext
 KEXTMACHO?=	$(KEXTNAME).out
 ARCHFLAGS?=	-arch x86_64
-PREFIX?=	/Library/Extensions
 
 #
 # Set default macOS SDK
@@ -210,15 +209,9 @@ unload:
 	sudo kextunload $(KEXTBUNDLE)
 	sudo dmesg | grep $(KEXTNAME) | tail -2
 
-install: $(KEXTBUNDLE) uninstall
-	test -d "$(PREFIX)"
-	sudo cp -r $< "$(PREFIX)/$<"
-	sudo chown -R root:wheel "$(PREFIX)/$<"
-
-uninstall:
-	test -d "$(PREFIX)"
-	test -e "$(PREFIX)/$(KEXTBUNDLE)" && \
-	sudo rm -rf "$(PREFIX)/$(KEXTBUNDLE)" || true
+install: $(KEXTBUNDLE)
+	mountEFI
+	cp -r ForceD3.kext ~/OC/Kexts
 
 clean:
 	rm -rf $(KEXTBUNDLE) $(KEXTBUNDLE).dSYM .Info.plist $(OBJS) $(KEXTMACHO)
