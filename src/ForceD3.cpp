@@ -12,19 +12,6 @@
  */
 OSDefineMetaClassAndStructors(__IO_CLASS__, IOService);
 
-bool forceSetPowerStateD3(IOPCIDevice *device)
-{
-    // From https://www.notion.so/Using-VoodooI2C-on-comet-lake-cpu-e-g-i5-10210u-142930887087445eaa533120455da5dc
-    // I'm the author of that notion article :)
-    IOByteCount offset;
-    device->extendedFindPCICapability(kIOPCIPowerManagementCapability, &offset);
-
-    // Let's play hack. Force D3 here
-    uint16_t oldPMbits = device->extendedConfigRead16(offset + 0x4);
-    uint16_t newPMbits = (oldPMbits & (~0x3)) | 0x3;
-    device->extendedConfigWrite16(offset + 0x4, newPMbits);
-}
-
 bool __IO_CLASS__::start(IOService *provider_)
 {
     bool result = IOService::start(provider_);
@@ -44,7 +31,7 @@ bool __IO_CLASS__::start(IOService *provider_)
         provider->enablePCIPowerManagement(kPCIPMCSPowerStateD3);
 
         // Set!
-        forceSetPowerStateD3(provider);
+        provider->setPowerState(kIOPCIDeviceOffState, this);
         IOLog(" - PCI device powered off (D3)\n");
         return true;
     }
@@ -70,7 +57,7 @@ IOReturn __IO_CLASS__::powerStateDidChangeTo(
     if (stateNumber == kIOPCIDeviceOnState)
     {
         auto provider = OSDynamicCast(IOPCIDevice, whatDevice);
-        forceSetPowerStateD3(provider);
+        provider->setPowerState(kIOPCIDeviceOffState, this);
         IOLog(" - PCI device powered off due to powerStateDidChangeTo (%d)\n", stateNumber);
     }
     return IOPMAckImplied;
