@@ -10,9 +10,10 @@
  * This required macro defines the class's constructors, destructors
  *  and several other methods I/O Kit requires.
  */
-OSDefineMetaClassAndStructors(__IO_CLASS__, IOService)
+OSDefineMetaClassAndStructors(__IO_CLASS__, IOService);
 
-bool forceSetPowerStateD3(IOPCIDevice* device) {
+bool forceSetPowerStateD3(IOPCIDevice *device)
+{
     // From https://www.notion.so/Using-VoodooI2C-on-comet-lake-cpu-e-g-i5-10210u-142930887087445eaa533120455da5dc
     // I'm the author of that notion article :)
     IOByteCount offset;
@@ -24,14 +25,14 @@ bool forceSetPowerStateD3(IOPCIDevice* device) {
     device->extendedConfigWrite16(offset + 0x4, newPMbits);
 }
 
-
 bool __IO_CLASS__::start(IOService *provider_)
 {
     bool result = IOService::start(provider_);
     IOLog("Starting\n");
 
     IOLog("Initializing ForceD3: inject to %s\n", provider_->getName());
-    if (result) {
+    if (result)
+    {
         auto provider = OSDynamicCast(IOPCIDevice, provider_);
 
         // register observer for powerStateDidChangeTo
@@ -46,7 +47,9 @@ bool __IO_CLASS__::start(IOService *provider_)
         forceSetPowerStateD3(provider);
         IOLog(" - PCI device powered off (D3)\n");
         return true;
-    } else {
+    }
+    else
+    {
         IOLog("Failed...\n");
         return false;
     }
@@ -61,10 +64,11 @@ void __IO_CLASS__::stop(IOService *provider)
 IOReturn __IO_CLASS__::powerStateDidChangeTo(
     IOPMPowerFlags capabilities,
     unsigned long stateNumber,
-    IOService *whatDevice
-) {
+    IOService *whatDevice)
+{
     IOLog("powerStateDidChangeTo: %d, %d, %s\n", capabilities, stateNumber, whatDevice->getName());
-    if (stateNumber == kIOPCIDeviceOnState) {
+    if (stateNumber == kIOPCIDeviceOnState)
+    {
         auto provider = OSDynamicCast(IOPCIDevice, whatDevice);
         forceSetPowerStateD3(provider);
         IOLog(" - PCI device powered off due to powerStateDidChangeTo (%d)\n", stateNumber);
