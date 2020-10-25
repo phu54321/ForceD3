@@ -11,18 +11,20 @@
 #error Use makefile.
 #endif
 
-class __IO_CLASS__ : public IOService {
-    OSDeclareDefaultStructors(__IO_CLASS__)
+class __IO_CLASS__ : public IOService
+{
+    using super = IOService;
+
+    OSDeclareDefaultStructors(__IO_CLASS__);
 
 public:
-    bool start(IOService *provider) override;
-    void stop(IOService *provider) override;
+    virtual bool start(IOService *provider) override;
+    virtual void stop(IOService *provider) override;
 
     virtual IOReturn powerStateDidChangeTo(
         IOPMPowerFlags capabilities,
         unsigned long stateNumber,
-        IOService *whatDevice );
+        IOService *whatDevice) override;
 };
 
-#endif      /* __IOEXAMPLE_H__ */
-
+#endif /* __IOEXAMPLE_H__ */

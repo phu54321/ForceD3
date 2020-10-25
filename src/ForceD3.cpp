@@ -10,11 +10,11 @@
  * This required macro defines the class's constructors, destructors
  *  and several other methods I/O Kit requires.
  */
-OSDefineMetaClassAndStructors(__IO_CLASS__, IOService);
+OSDefineMetaClassAndStructors(__IO_CLASS__, __IO_CLASS__::super);
 
 bool __IO_CLASS__::start(IOService *provider_)
 {
-    bool result = IOService::start(provider_);
+    bool result = super::start(provider_);
     IOLog("Starting\n");
 
     IOLog("Initializing ForceD3: inject to %s\n", provider_->getName());
@@ -44,7 +44,7 @@ bool __IO_CLASS__::start(IOService *provider_)
 
 void __IO_CLASS__::stop(IOService *provider)
 {
-    IOService::stop(provider);
+    super::stop(provider);
     IOLog("Stopping\n");
 }
 
