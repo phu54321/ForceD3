@@ -54,7 +54,9 @@ IOReturn __IO_CLASS__::powerStateDidChangeTo(
     IOService *whatDevice)
 {
     IOLog("powerStateDidChangeTo: %d, %d, %s\n", capabilities, stateNumber, whatDevice->getName());
-    if (stateNumber == kIOPCIDeviceOnState)
+    if (
+        whatDevice == getProvider() &&
+        stateNumber == kIOPCIDeviceOnState)
     {
         auto provider = OSDynamicCast(IOPCIDevice, whatDevice);
         provider->setPowerState(kIOPCIDeviceOffState, this);
