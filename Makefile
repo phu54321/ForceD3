@@ -100,7 +100,7 @@ CFLAGS+=	$(SDKFLAGS) \
 ifdef MACOSX_VERSION_MIN
 LDFLAGS+=	-mmacosx-version-min=$(MACOSX_VERSION_MIN)
 else
-LDFLAGS+=	-mmacosx-version-min=10.4
+LDFLAGS+=	-mmacosx-version-min=10.11
 endif
 LDFLAGS+=	$(SDKFLAGS) \
 		$(ARCHFLAGS) \
@@ -211,6 +211,7 @@ unload:
 
 install: $(KEXTBUNDLE)
 	mountEFI
+	rm -rf ~/OC/Kexts/ForceD3.kext
 	cp -r ForceD3.kext ~/OC/Kexts
 
 clean:
