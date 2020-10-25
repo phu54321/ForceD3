@@ -10,7 +10,25 @@
  * This required macro defines the class's constructors, destructors
  *  and several other methods I/O Kit requires.
  */
-OSDefineMetaClassAndStructors(__IO_CLASS__, __IO_CLASS__::super);
+OSDefineMetaClassAndStructors(__IO_CLASS__, IOService);
+
+bool __IO_CLASS__::init(OSDictionary *dictionary)
+{
+    IOLog("init\n");
+    return super::init(dictionary);
+}
+
+void __IO_CLASS__::free(void)
+{
+    IOLog("free\n");
+    return super::free();
+}
+
+IOService *__IO_CLASS__::probe(IOService *provider, SInt32 *score)
+{
+    IOLog("probe %s\n", provider->getName());
+    return super::probe(provider, score);
+}
 
 bool __IO_CLASS__::start(IOService *provider_)
 {
@@ -53,14 +71,14 @@ IOReturn __IO_CLASS__::powerStateDidChangeTo(
     unsigned long stateNumber,
     IOService *whatDevice)
 {
-    IOLog("powerStateDidChangeTo: %d, %d, %s\n", capabilities, stateNumber, whatDevice->getName());
+    IOLog("powerStateDidChangeTo: %lu, %lu, %s\n", capabilities, stateNumber, whatDevice->getName());
     if (
         whatDevice == getProvider() &&
         stateNumber == kIOPCIDeviceOnState)
     {
         auto provider = OSDynamicCast(IOPCIDevice, whatDevice);
         provider->setPowerState(kIOPCIDeviceOffState, this);
-        IOLog(" - PCI device powered off due to powerStateDidChangeTo (%d)\n", stateNumber);
+        IOLog(" - PCI device powered off due to powerStateDidChangeTo (%lu)\n", stateNumber);
     }
     return IOPMAckImplied;
 }

@@ -18,6 +18,10 @@ class __IO_CLASS__ : public IOService
     OSDeclareDefaultStructors(__IO_CLASS__);
 
 public:
+    virtual bool init(OSDictionary *dictionary = 0);
+    virtual void free(void);
+    virtual IOService *probe(IOService *provider, SInt32 *score);
+
     virtual bool start(IOService *provider) override;
     virtual void stop(IOService *provider) override;
 
