@@ -6,14 +6,17 @@
 #define __IOEXAMPLE_H__
 
 #include <IOKit/IOService.h>
+#include <IOKit/pci/IOPCIDevice.h>
+#include <IOKit/IOLib.h>
+#include <IOKit/IOTimerEventSource.h>
 
 #ifndef __iokit_makefile__
 #error Use makefile.
 #endif
 
-class __IO_CLASS__ : public IOService
+class __IO_CLASS__ : public IOPCIDevice
 {
-    using super = IOService;
+    using super = IOPCIDevice;
 
     OSDeclareDefaultStructors(__IO_CLASS__);
 
@@ -25,10 +28,11 @@ public:
     virtual bool start(IOService *provider) override;
     virtual void stop(IOService *provider) override;
 
-    virtual IOReturn powerStateDidChangeTo(
-        IOPMPowerFlags capabilities,
-        unsigned long stateNumber,
-        IOService *whatDevice) override;
+    void watchdogAction(IOTimerEventSource *timer);
+
+private:
+    IOTimerEventSource *watchdogTimer;
+    IOWorkLoop *fWatchdogWorkLoop;
 };
 
 #endif /* __IOEXAMPLE_H__ */

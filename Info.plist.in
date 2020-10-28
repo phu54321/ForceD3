@@ -34,10 +34,10 @@
 			<string>__IO_CLASS__</string>
 			<key>IOKitDebug</key>
 			<integer>__IOKIT_DEBUG__</integer>
-			<key>IONameMatch</key>
+			<key>SlotList</key>
 			<array>
-				<string>pci8086,2bc</string>
-				<string>pci8086,2b0</string>
+				<string>RP05</string>
+				<string>RP09</string>
 			</array>
 			<key>IOProbeScore</key>
 			<integer>9999</integer>

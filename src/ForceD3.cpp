@@ -6,79 +6,105 @@
 #include <IOKit/pci/IOPCIDevice.h>
 #include "ForceD3.h"
 
+const int kWatchDogTimerPeriod = 5000;
+
 /*
  * This required macro defines the class's constructors, destructors
  *  and several other methods I/O Kit requires.
  */
-OSDefineMetaClassAndStructors(__IO_CLASS__, IOService);
+OSDefineMetaClassAndStructors(__IO_CLASS__, __IO_CLASS__::super);
 
 bool __IO_CLASS__::init(OSDictionary *dictionary)
 {
-    IOLog("init\n");
     return super::init(dictionary);
 }
 
 void __IO_CLASS__::free(void)
 {
-    IOLog("free\n");
     return super::free();
 }
 
 IOService *__IO_CLASS__::probe(IOService *provider, SInt32 *score)
 {
-    IOLog("probe %s\n", provider->getName());
-    return super::probe(provider, score);
+    auto pcieSlot = provider->getProvider();
+    auto slotListArray = OSDynamicCast(OSArray, getProperty("SlotList"));
+    if (!slotListArray)
+        return nullptr;
+
+    for (int i = 0; i < slotListArray->getCount(); i++)
+    {
+        auto slotName = OSDynamicCast(OSString, slotListArray->getObject(i));
+        if (slotName && strcmp(pcieSlot->getName(), slotName->getCStringNoCopy()) == 0)
+        {
+            return this;
+        }
+    }
+    return nullptr;
 }
 
 bool __IO_CLASS__::start(IOService *provider_)
 {
     bool result = super::start(provider_);
-    IOLog("Starting\n");
+    if (!result)
+        return false;
 
-    IOLog("Initializing ForceD3: inject to %s\n", provider_->getName());
-    if (result)
+    fWatchdogWorkLoop = getWorkLoop();
+    if (!fWatchdogWorkLoop)
     {
-        auto provider = OSDynamicCast(IOPCIDevice, provider_);
-
-        // register observer for powerStateDidChangeTo
-        IOLog(" - registering observer for power state change notification\n");
-        provider->registerInterestedDriver(this);
-
-        // Allow D3. IDK this is required, but it's safe to have one.
-        IOLog(" - enablePCIPowerManagement(D3)\n");
-        provider->enablePCIPowerManagement(kPCIPMCSPowerStateD3);
-
-        // Set!
-        provider->setPowerState(kIOPCIDeviceOffState, this);
-        IOLog(" - PCI device powered off (D3)\n");
-        return true;
-    }
-    else
-    {
-        IOLog("Failed...\n");
+        IOLog(" - failed to get fWatchdogWorkLoop\n");
+        super::stop(provider_);
         return false;
     }
+    watchdogTimer = IOTimerEventSource::timerEventSource(this, OSMemberFunctionCast(IOTimerEventSource::Action, this, &__IO_CLASS__::watchdogAction));
+    if (!watchdogTimer)
+    {
+        IOLog(" - failed to create watchdogTimer\n");
+        fWatchdogWorkLoop = nullptr;
+        super::stop(provider_);
+        return false;
+    }
+    fWatchdogWorkLoop->addEventSource(watchdogTimer);
+
+    watchdogTimer->setTimeoutMS(kWatchDogTimerPeriod);
+    watchdogTimer->enable();
 }
 
 void __IO_CLASS__::stop(IOService *provider)
 {
+    if (fWatchdogWorkLoop && watchdogTimer)
+    {
+        watchdogTimer->cancelTimeout();
+        fWatchdogWorkLoop->removeEventSource(watchdogTimer);
+        watchdogTimer->release();
+        watchdogTimer = NULL;
+        fWatchdogWorkLoop = NULL;
+    }
+
     super::stop(provider);
-    IOLog("Stopping\n");
 }
 
-IOReturn __IO_CLASS__::powerStateDidChangeTo(
-    IOPMPowerFlags capabilities,
-    unsigned long stateNumber,
-    IOService *whatDevice)
+void __IO_CLASS__::watchdogAction(IOTimerEventSource *timer)
 {
-    IOLog("powerStateDidChangeTo: %lu, %lu, %s\n", capabilities, stateNumber, whatDevice->getName());
-    if (
-        whatDevice == getProvider() &&
-        stateNumber == kIOPCIDeviceOnState)
+    auto provider = OSDynamicCast(IOPCIDevice, getProvider()->getProvider());
+    if (!provider)
     {
-        auto provider = OSDynamicCast(IOPCIDevice, whatDevice);
-        provider->setPowerState(kIOPCIDeviceOffState, this);
-        IOLog(" - PCI device powered off due to powerStateDidChangeTo (%lu)\n", stateNumber);
+        return;
     }
-    return IOPMAckImplied;
+
+    int currentPowerState = provider->getPowerState();
+
+    if (currentPowerState == kIOPCIDeviceOnState)
+    {
+        provider->enablePCIPowerManagement(kPCIPMCSPowerStateD3);
+        int ack = provider->setPowerState(kIOPCIDeviceOffState, this);
+        if (ack == IOPMAckImplied)
+        {
+            IOLog(" - %s: state %d to off\n", provider->getName(), currentPowerState);
+        }
+        else
+        {
+            IOLog(" - %s: state %d to off w/ %dms threshold\n", provider->getName(), currentPowerState, ack);
+        }
+    }
+    watchdogTimer->setTimeoutMS(kWatchDogTimerPeriod);
 }
