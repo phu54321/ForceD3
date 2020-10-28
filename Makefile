@@ -194,20 +194,8 @@ release: CFLAGS += -O2
 release: IOKIT_DEBUG ?= 0
 release: $(KEXTBUNDLE)
 
-load: $(KEXTBUNDLE)
-	sudo chown -R root:wheel $<
-	sudo sync
-	sudo kextutil $<
-	# restore original owner:group
-	sudo chown -R '$(USER):$(shell id -gn)' $<
-	sudo dmesg | grep $(KEXTNAME) | tail -1
-
 stat:
 	kextstat | grep $(KEXTNAME)
-
-unload:
-	sudo kextunload $(KEXTBUNDLE)
-	sudo dmesg | grep $(KEXTNAME) | tail -2
 
 install: $(KEXTBUNDLE)
 	mountEFI
