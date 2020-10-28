@@ -214,6 +214,14 @@ install: $(KEXTBUNDLE)
 	rm -rf ~/OC/Kexts/ForceD3.kext
 	cp -r ForceD3.kext ~/OC/Kexts
 
+load: $(KEXTBUNDLE)
+	sudo chown -R root:wheel ForceD3.kext
+	sudo kextload ForceD3.kext
+	sudo chown -R whyask37:staff ForceD3.kext
+
+unload:
+	sudo kextunload ForceD3.kext
+
 clean:
 	rm -rf $(KEXTBUNDLE) $(KEXTBUNDLE).dSYM .Info.plist $(OBJS) $(KEXTMACHO)
 
