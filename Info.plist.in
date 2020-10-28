@@ -43,6 +43,8 @@
 			<integer>9999</integer>
 			<key>IOProviderClass</key>
 			<string>__IO_PROVIDER_CLASS__</string>
+			<key>IOMatchCategory</key>
+			<string>__IO_CLASS__</string>
 		</dict>
 	</dict>
 __KEXTLIBS__
